@@ -1,0 +1,143 @@
+Scent detection screen with waveform / animation during scanning
+
+Results screen
+
+History of scans
+
+Favorites list
+
+Fragrance database search
+
+User accounts
+
+Feedback loop allowing users to confirm accuracy
+
+USER JOURNEY
+
+Open the app
+
+Press “Scan Scent”
+
+App communicates with external sensor
+
+Sensor captures VOC (Volatile Organic Compound) data
+
+Backend ML model returns best match
+
+Display result + similar alternatives
+
+Save scan in user history
+
+TECHNICAL ARCHITECTURE
+
+Frontend (mobile):
+
+React Native or Flutter (recommend React Native for Replit integration)
+
+Clean responsive UI, lightweight animation
+
+Backend:
+
+Node.js or Python FastAPI (Python recommended for ML integration)
+
+Replit-hosted APIs
+
+ML Component:
+Model that performs:
+
+VOC vector preprocessing
+
+Embedding creation
+
+Nearest-neighbor fragrance classification
+
+Database:
+
+PostgreSQL
+Tables for Users, Scans, Fragrances, SensorData, TrainingData
+
+External Device (Minimum Viable Hardware):
+
+MQ-series gas sensors (MQ-135, MQ-3, MQ-9)
+
+Or commercial electronic-nose arrays like BME680 + CCP NRF hardware
+
+Bluetooth or USB microcontroller (ESP32 recommended)
+
+DATABASE SCHEMA (to implement in Replit)
+users
+
+id (UUID)
+
+email
+
+password_hash
+
+created_at
+
+scans
+
+id
+
+user_id
+
+fragrance_id
+
+raw_voc_vector (JSON)
+
+confidence_score
+
+scanned_at
+
+fragrances
+
+id
+
+name
+
+brand
+
+voc_signature_vector JSON
+
+top_notes TEXT[]
+
+mid_notes TEXT[]
+
+base_notes TEXT[]
+
+API ENDPOINTS
+
+POST /scan – Accept sensor data & return fragrance
+GET /fragrance/:id – Retrieve fragrance details
+POST /auth/login
+POST /auth/signup
+GET /user/history
+
+Include example requests & responses.
+
+MODEL REQUIREMENTS
+
+Input: VOC vector, typically length 8–32
+
+Output: Top-5 similar fragrance IDs
+
+Suggested algorithms:
+
+PCA → nearest-neighbor search
+
+SVM classifier
+
+Or simple ML: Random Forest
+
+Dataset sources: scraped fragrance notes + sensor data samples
+
+HARDWARE STRATEGY
+
+App alone cannot smell.
+You need:
+
+An external “digital nose” that reads VOC signatures.
+
+The app connects via Bluetooth or WiFi.
+
+Early prototypes can simulate sensor data to build UI.
