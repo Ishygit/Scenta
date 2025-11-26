@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -13,18 +13,19 @@ SECRET_KEY = os.environ.get("SESSION_SECRET", "scentid-secret-key-change-in-prod
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     plain_password = plain_password[:72]
-    return pwd_context.verify(plain_password, hashed_password)
+    hashed_password_bytes = hashed_password.encode() if isinstance(hashed_password, str) else hashed_password
+    return bcrypt.checkpw(plain_password.encode(), hashed_password_bytes)
 
 
 def get_password_hash(password: str) -> str:
     password = password[:72]
-    return pwd_context.hash(password)
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode(), salt).decode()
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
