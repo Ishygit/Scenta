@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 from sqlalchemy.orm import Session
@@ -15,8 +15,29 @@ class ScentRecognitionModel:
         self.is_fitted = False
         self.vector_size = 16
     
-    def preprocess_voc_vector(self, raw_vector: List[float]) -> np.ndarray:
-        vector = np.array(raw_vector, dtype=np.float32)
+    def _parse_vector(self, raw_vector: Union[str, List[float], None]) -> Optional[List[float]]:
+        if raw_vector is None:
+            return None
+        if isinstance(raw_vector, str):
+            try:
+                parsed = json.loads(raw_vector)
+                if isinstance(parsed, list):
+                    return [float(x) for x in parsed]
+            except (json.JSONDecodeError, ValueError):
+                return None
+        if isinstance(raw_vector, list):
+            try:
+                return [float(x) for x in raw_vector]
+            except (ValueError, TypeError):
+                return None
+        return None
+    
+    def preprocess_voc_vector(self, raw_vector: Union[str, List[float]]) -> Optional[np.ndarray]:
+        parsed = self._parse_vector(raw_vector)
+        if parsed is None:
+            return None
+            
+        vector = np.array(parsed, dtype=np.float32)
         
         if len(vector) < self.vector_size:
             vector = np.pad(vector, (0, self.vector_size - len(vector)), mode='constant')
@@ -45,8 +66,9 @@ class ScentRecognitionModel:
         for fragrance in fragrances:
             if fragrance.voc_signature_vector:
                 vector = self.preprocess_voc_vector(fragrance.voc_signature_vector)
-                vectors.append(vector)
-                self.fragrance_ids.append(fragrance.id)
+                if vector is not None:
+                    vectors.append(vector)
+                    self.fragrance_ids.append(fragrance.id)
         
         if len(vectors) < 2:
             self.is_fitted = False
@@ -64,11 +86,14 @@ class ScentRecognitionModel:
         self.is_fitted = True
         return True
     
-    def predict(self, voc_vector: List[float], top_k: int = 5) -> List[Tuple[str, float]]:
+    def predict(self, voc_vector: Union[str, List[float]], top_k: int = 5) -> List[Tuple[str, float]]:
         if not self.is_fitted or self.nn_model is None:
             return []
         
         processed = self.preprocess_voc_vector(voc_vector)
+        if processed is None:
+            return []
+            
         processed = processed.reshape(1, -1)
         
         scaled = self.scaler.transform(processed)
