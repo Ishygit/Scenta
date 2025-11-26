@@ -1,5 +1,5 @@
 entrypoint = "index.js"
-modules = ["nodejs-22"]
+modules = ["nodejs-22", "python-3.11"]
 hidden = [".config", "package-lock.json"]
 
 [gitHubImport]
@@ -7,6 +7,7 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
 [nix]
 channel = "stable-24_11"
+packages = ["cargo", "glibcLocales", "libiconv", "rustc"]
 
 [deployment]
 run = ["node", "index.js"]
@@ -15,3 +16,4 @@ ignorePorts = false
 
 [agent]
 expertMode = true
+integrations = ["python_database:1.0.0"]
