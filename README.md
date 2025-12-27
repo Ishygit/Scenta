@@ -2,7 +2,7 @@
 
 ScentID is a cross-platform mobile-first web application that identifies fragrances using VOC (Volatile Organic Compound) sensor data. Just like Shazam identifies songs by their sound, ScentID identifies perfumes, colognes, and scents by their chemical "fingerprint."
 
-![ScentID Preview](https://replit.com/badge/replit/scentid)
+![ScentID Preview](Screenshot 2025-12-26 174042.png)
 
 ## 🚀 Key Features
 
