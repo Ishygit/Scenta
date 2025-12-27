@@ -81,4 +81,4 @@ The app will be available at `http://localhost:5000`.
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
-Built with ❤️ on Replit
+Built with ❤️
