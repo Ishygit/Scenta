@@ -132,3 +132,13 @@ dist
 # Replit debugger
 .breakpoints
 .DS_Store
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
